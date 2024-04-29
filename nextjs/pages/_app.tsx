@@ -5,6 +5,7 @@ import { WagmiProvider } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import type { AppProps } from "next/app";
+import Header from "@/components/Header";
 
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
@@ -19,6 +20,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider modalSize="compact">
+          <Header />
           {<Component {...pageProps} />}
         </RainbowKitProvider>
       </QueryClientProvider>
