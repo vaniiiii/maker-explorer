@@ -1,4 +1,5 @@
 import SearchBar from "@/components/SearchBar";
+import VaultInfo from "@/components/VaultInfo";
 
 export default function Vaults() {
   return (
@@ -7,6 +8,7 @@ export default function Vaults() {
         Explore Vault informations
       </p>
       <SearchBar />
+      <VaultInfo />
     </div>
   );
 }
