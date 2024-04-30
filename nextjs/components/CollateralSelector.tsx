@@ -1,9 +1,13 @@
 import { useState } from "react";
 
-export default function CollateralSelector() {
+export default function CollateralSelector({
+  selectedCollateral,
+  onCollateralSelect,
+}: {
+  selectedCollateral: string;
+  onCollateralSelect: any;
+}) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("");
-
   const options = [
     { label: "ETH-A", value: "ETH-A" },
     { label: "WBTC-A", value: "WBTC-A" },
@@ -15,12 +19,12 @@ export default function CollateralSelector() {
   };
 
   const handleOptionSelect = (value: string) => {
-    setSelectedValue(value);
+    onCollateralSelect(value);
     setIsOpen(false);
   };
 
-  const displayValue = selectedValue
-    ? options.find((opt) => opt.value === selectedValue)?.label
+  const displayValue = selectedCollateral
+    ? options.find((opt) => opt.value === selectedCollateral)?.label
     : "Choose collateral";
 
   return (

@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import SearchBar from "@/components/SearchBar";
 import CollateralSelector from "@/components/CollateralSelector";
+import VaultsList from "@/components/VaultsList";
 
 export default function Home() {
   const [vaultNumber, setVaultNumber] = useState("");
-  const [debouncedValue, setDebouncedValue] = useState(vaultNumber);
+  const [debouncedVaultNumber, setDebouncedVaultNumber] = useState("");
+  const [selectedCollateral, setSelectedCollateral] = useState("");
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedValue(vaultNumber);
-    }, 300); // 300ms
-
+      setDebouncedVaultNumber(vaultNumber);
+    }, 300); // Debounce delay
     return () => {
       clearTimeout(handler);
     };
@@ -22,9 +23,16 @@ export default function Home() {
         <p className="mb-2 font-bold text-4xl text-center">
           Find Closest Vault
         </p>
-        <CollateralSelector />
+        <CollateralSelector
+          selectedCollateral={selectedCollateral}
+          onCollateralSelect={setSelectedCollateral}
+        />
         <SearchBar inputValue={vaultNumber} onInputChange={setVaultNumber} />
       </div>
+      <VaultsList
+        collateralType={selectedCollateral}
+        vaultNumber={debouncedVaultNumber}
+      />
     </div>
   );
 }
