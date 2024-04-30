@@ -23,8 +23,8 @@ export default function Home() {
           Find Closest Vault
         </p>
         <CollateralSelector />
+        <SearchBar inputValue={vaultNumber} onInputChange={setVaultNumber} />
       </div>
-      <SearchBar inputValue={vaultNumber} onInputChange={setVaultNumber} />
     </div>
   );
 }

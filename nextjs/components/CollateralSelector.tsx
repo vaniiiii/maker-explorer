@@ -1,17 +1,57 @@
+import { useState } from "react";
+
 export default function CollateralSelector() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState("");
+
+  const options = [
+    { label: "ETH-A", value: "ETH-A" },
+    { label: "WBTC-A", value: "WBTC-A" },
+    { label: "WSTETH-A", value: "WSTETH-A" },
+  ];
+
+  const handleDropdownToggle = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleOptionSelect = (value: string) => {
+    setSelectedValue(value);
+    setIsOpen(false);
+  };
+
+  const displayValue = selectedValue
+    ? options.find((opt) => opt.value === selectedValue)?.label
+    : "Choose collateral";
+
   return (
     <div className="p-1 flex flex-col">
-      <label htmlFor="collateral-type" className="p-3 text-xl text-center">
-        Collateral types:
-      </label>
-      <select
-        id="collateral-type"
-        className="form-select h-10 text-white placeholder-white placeholder-opacity-50 bg-black bg-opacity-20 outline-none border-0 rounded-full text-center"
-      >
-        <option value="ETH-A">ETH-A</option>
-        <option value="WBTC-A">WBTC-A</option>
-        <option value="WSTETH-A">WSTETH-A</option>
-      </select>
+      <div className="relative">
+        <div
+          className="form-select h-10 text-white bg-black bg-opacity-20 outline-none border-0 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-700 hover:bg-opacity-50"
+          onClick={handleDropdownToggle}
+        >
+          {displayValue}
+        </div>
+        {isOpen && (
+          <div className="absolute w-full bg-black bg-opacity-20 mt-1 rounded-lg z-10">
+            <div
+              className="p-2 text-white text-center hover:bg-gray-700 hover:bg-opacity-50 cursor-pointer"
+              onClick={() => handleOptionSelect("")}
+            >
+              Deselect
+            </div>
+            {options.map((option) => (
+              <div
+                key={option.value}
+                className="p-2 text-white text-center hover:bg-gray-700 hover:bg-opacity-50 cursor-pointer"
+                onClick={() => handleOptionSelect(option.value)}
+              >
+                {option.label}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
