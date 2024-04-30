@@ -1,3 +1,7 @@
+interface IlkConfig {
+  [key: string]: { price: number; liqRatio: number };
+}
+
 const VAULT_INFO_ADDRESS = "0x68C61AF097b834c68eA6EA5e46aF6c04E8945B2d";
 
 const VAULT_INFO_ABI = [
@@ -49,9 +53,21 @@ const VAULT_INFO_ABI = [
 
 const ETH_PRICE = 3200;
 const BTC_PRICE = 63000;
+const USDC_PRICE = 1;
+const OTHER_PRICE = 1000;
 
 const ETH_LIQ_RATIO = 1.45;
 const BTC_LIQ_RATIO = 1.5;
 const USDC_LIQ_RATIO = 1.01;
+const OTHER_LIQ_RATIO = 1.5;
 
-export { VAULT_INFO_ADDRESS, VAULT_INFO_ABI, ETH_PRICE, BTC_PRICE, ETH_LIQ_RATIO, BTC_LIQ_RATIO, USDC_LIQ_RATIO };
+const ILK_CONFIG: IlkConfig = {
+  "ETH": { price: ETH_PRICE, liqRatio: ETH_LIQ_RATIO },
+  "WBTC": { price: BTC_PRICE, liqRatio: BTC_LIQ_RATIO },
+  "USDC": { price: USDC_PRICE, liqRatio: USDC_LIQ_RATIO },
+  "OTHER": {
+    price: OTHER_PRICE, liqRatio: OTHER_LIQ_RATIO
+  }
+};
+
+export { VAULT_INFO_ADDRESS, VAULT_INFO_ABI, ILK_CONFIG };
