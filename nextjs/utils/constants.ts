@@ -2,7 +2,13 @@ interface IlkConfig {
   [key: string]: { price: number; liqRatio: number };
 }
 
+const MAX_RPC_CALLS = 5;
+const DESIRED_VAULTS = 20;
+
+const ALCHEMY_API_KEY = "";
+
 const VAULT_INFO_ADDRESS = "0x68C61AF097b834c68eA6EA5e46aF6c04E8945B2d";
+const MANAGER_ADDRESS = "0x5ef30b9986345249bc32d8928B7ee64DE9435E39";
 
 const VAULT_INFO_ABI = [
   {
@@ -51,6 +57,22 @@ const VAULT_INFO_ABI = [
   }
 ];
 
+const MANAGER_ABI = [{
+  "constant": true,
+  "inputs": [],
+  "name": "cdpi",
+  "outputs": [
+    {
+      "internalType": "uint256",
+      "name": "",
+      "type": "uint256"
+    }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+}];
+
 const ETH_PRICE = 3200;
 const BTC_PRICE = 63000;
 const USDC_PRICE = 1;
@@ -70,4 +92,4 @@ const ILK_CONFIG: IlkConfig = {
   }
 };
 
-export { VAULT_INFO_ADDRESS, VAULT_INFO_ABI, ILK_CONFIG };
+export { MAX_RPC_CALLS, ALCHEMY_API_KEY, DESIRED_VAULTS, VAULT_INFO_ADDRESS, VAULT_INFO_ABI, ILK_CONFIG, MANAGER_ADDRESS, MANAGER_ABI };

@@ -11,7 +11,7 @@ export default function Home() {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedVaultNumber(vaultNumber);
-    }, 300); // Debounce delay
+    }, 600);
     return () => {
       clearTimeout(handler);
     };
