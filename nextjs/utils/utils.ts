@@ -43,10 +43,10 @@ function calculateMaximumDebt(collateral: number, debt: number, price: number, l
   return collateralInUSD / liqRatio;
 }
 
-function bytesToString(hex: string): string {
-  return Buffer.from(hex.replace(/^0x/, ''), 'hex').toString().replace(/\x00/g, '');
-}
-
 function getIlkType(ilk: string): string {
   return Object.keys(C.ILK_CONFIG).find(type => ilk.startsWith(type)) || 'OTHER';
+}
+
+export function bytesToString(hex: string): string {
+  return Buffer.from(hex.replace(/^0x/, ''), 'hex').toString().replace(/\x00/g, '');
 }

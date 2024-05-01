@@ -1,3 +1,4 @@
+import { search } from "@/utils/search";
 export default function VaultList({
   collateralType,
   vaultNumber,
@@ -8,6 +9,9 @@ export default function VaultList({
   if (!collateralType || !vaultNumber) {
     return null;
   }
+  const result = search(collateralType, vaultNumber).then((res) => {
+    console.log(res);
+  });
 
   return (
     <div>
