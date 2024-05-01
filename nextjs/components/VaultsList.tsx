@@ -12,6 +12,7 @@ export default function VaultList({
 }: VaultListProps) {
   const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [searchPerformed, setSearchPerformed] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,6 +29,8 @@ export default function VaultList({
         console.error(err);
         setData([]);
       }
+
+      setSearchPerformed(true);
     };
 
     fetchData();
@@ -37,7 +40,9 @@ export default function VaultList({
     return <div>Error: {error}</div>;
   }
 
-  if (data.length === 0) {
+  if (!searchPerformed) {
+    return;
+  } else if (searchPerformed && data.length === 0) {
     return <div>No data available.</div>;
   } else {
     return (

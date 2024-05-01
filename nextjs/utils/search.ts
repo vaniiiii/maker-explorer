@@ -51,8 +51,6 @@ export async function search(collateralType: string, roughCdpId: string) {
       apiCallCount++;
     }
 
-    console.log(upperCalls, lowerCalls, apiCallCount);
-
     if (apiCallCount >= 40) {
       await delay(100); // @dev rate-limit to 40 calls per 100ms
       apiCallCount = 0;
