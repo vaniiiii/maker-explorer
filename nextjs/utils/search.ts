@@ -14,12 +14,12 @@ const client = createPublicClient({
 })
 
 export async function search(collateralType: string, roughCdpId: string, setProgress: (progress: number) => void) {
-  const totalVaults: string = await client.readContract({
+  const totalVaults: number = parseInt(await client.readContract({
     "abi": C.MANAGER_ABI,
     "address": C.MANAGER_ADDRESS,
     functionName: "cdpi",
     args: [],
-  }) as string;
+  }) as string);
 
   let lowerId = parseInt(roughCdpId);
   let upperId = parseInt(roughCdpId) + 1;
@@ -28,9 +28,9 @@ export async function search(collateralType: string, roughCdpId: string, setProg
 
   const batchSize = collateralType === "ETH-A" ? C.BATCH_SIZE_ETH : C.BATCH_SIZE_OTHERS;
 
-  while (lowerId > 0 || upperId <= parseInt(totalVaults)) {
+  while (lowerId > 0 || upperId <= totalVaults) {
     let callCountLower: number = lowerId > 0 ? batchSize : 0;
-    let callCountUpper: number = upperId <= parseInt(totalVaults) ? batchSize : 0;
+    let callCountUpper: number = upperId <= totalVaults ? batchSize : 0;
 
     if (callCountLower == 0) {
       callCountUpper = 2 * batchSize;
@@ -47,7 +47,7 @@ export async function search(collateralType: string, roughCdpId: string, setProg
         args: [lowerId]
       });
     }
-    for (let i = 0; i < callCountUpper && upperId <= parseInt(totalVaults); i++, upperId++) {
+    for (let i = 0; i < callCountUpper && upperId <= totalVaults; i++, upperId++) {
       calls.push({
         address: C.VAULT_INFO_ADDRESS,
         abi: C.VAULT_INFO_ABI,
