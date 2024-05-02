@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { search } from "@/utils/search";
 
-export function useSearchVaults(collateralType: string, vaultNumber: string, setLoading: (loading: boolean) => void) {
+export function useSearchVaults(
+  collateralType: string,
+  vaultNumber: string,
+  setLoading: (loading: boolean) => void
+) {
   const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
