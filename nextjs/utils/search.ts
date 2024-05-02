@@ -38,7 +38,7 @@ export async function search(collateralType: string, roughCdpId: string, setProg
       callCountLower = 2 * batchSize;
     }
 
-    const calls: any = [];
+    let calls: any = [];
     for (let i = 0; i < callCountLower && lowerId > 0; i++, lowerId--) {
       calls.push({
         address: C.VAULT_INFO_ADDRESS,
@@ -56,19 +56,34 @@ export async function search(collateralType: string, roughCdpId: string, setProg
       });
     }
 
-    try {
-      const results = await client.multicall({ contracts: calls });
-      results.forEach((result: any, index: number) => {
-        if (result.status === 'success' && bytesToString(result.result[3]) === collateralType) {
-          setProgress(Math.min(100, (vaults.length / C.DESIRED_VAULTS) * 100));
-          vaults.push(calls[index].args[0]);
-        }
-      });
-      if (vaults.length >= C.DESIRED_VAULTS) break;
-    } catch (e) {
-      console.error("Failed during multicall fetch:", e);
-      throw e;
-    }
+    let attempts = 0;
+    let failedCalls: any = [];
+
+    do {
+      try {
+        const results = await client.multicall({ contracts: calls });
+        failedCalls = [];
+
+        results.forEach((result: any, index: number) => {
+          if (result.status === 'success' && bytesToString(result.result[3]) === collateralType) {
+            setProgress(Math.min(100, (vaults.length / C.DESIRED_VAULTS) * 100));
+            vaults.push(calls[index].args[0]);
+          } else if (result.status === 'failure') {
+            failedCalls.push(calls[index]);
+          }
+        });
+
+        if (failedCalls.length === 0) break;
+
+        calls = failedCalls;
+        attempts++;
+      } catch (e) {
+        console.error("Failed during multicall fetch:", e);
+        if (++attempts >= C.MAX_RETRIES) throw e;
+      }
+    } while (failedCalls.length > 0 && attempts < C.MAX_RETRIES);
+
+    if (vaults.length >= C.DESIRED_VAULTS) break;
   }
 
   setProgress(100);
