@@ -1,22 +1,32 @@
-import { formatEther } from 'viem';
-import * as C from '@/utils/constants';
+import { formatEther } from "viem";
+import * as C from "@/utils/constants";
 
 // TO-DO:
-// 1. Fix debt calculation(do it later, should include fees)
-// 4. Function signature
+// 1. Function signature
 // 5. CLAIM AVAIL
 
 export const parseVaultInfo = (data: any) => {
   const ilk = data ? bytesToString(data[3]) : "";
   const collateral = data ? parseFloat(formatEther(data[4])) : 0;
-  const debt = data ? parseFloat(formatEther(data[5])) : 0;
+  const debt = data ? parseFloat(formatEther(data[6])) / C.RAY : 0;
 
   const ilkType = getIlkType(ilk);
   const { price, liqRatio } = C.ILK_CONFIG[ilkType];
 
-  const collateralizationRatio = debt !== 0 ? (100 * collateral * price / debt) : 0;
-  const minimalCollateral = calculateMinimalCollateral(collateral, debt, price, liqRatio).toFixed(2);
-  const maximumDebt = calculateMaximumDebt(collateral, debt, price, liqRatio).toFixed(2);
+  const collateralizationRatio =
+    debt !== 0 ? (100 * collateral * price) / debt : 0;
+  const minimalCollateral = calculateMinimalCollateral(
+    collateral,
+    debt,
+    price,
+    liqRatio
+  ).toFixed(2);
+  const maximumDebt = calculateMaximumDebt(
+    collateral,
+    debt,
+    price,
+    liqRatio
+  ).toFixed(2);
 
   return {
     ilk,
@@ -28,15 +38,24 @@ export const parseVaultInfo = (data: any) => {
   };
 };
 
-function calculateMinimalCollateral(collateral: number, debt: number, price: number, liqRatio: number): number {
+function calculateMinimalCollateral(
+  collateral: number,
+  debt: number,
+  price: number,
+  liqRatio: number
+): number {
   if (price === 0) return 0;
 
   const debtInIlk = debt / price;
   return debtInIlk * liqRatio;
 }
 // assuming DAI is pegged to USD 1:1
-function calculateMaximumDebt(collateral: number, debt: number, price: number, liqRatio: number): number {
-
+function calculateMaximumDebt(
+  collateral: number,
+  debt: number,
+  price: number,
+  liqRatio: number
+): number {
   if (liqRatio === 0) return 0;
 
   const collateralInUSD = collateral * price;
@@ -44,9 +63,13 @@ function calculateMaximumDebt(collateral: number, debt: number, price: number, l
 }
 
 function getIlkType(ilk: string): string {
-  return Object.keys(C.ILK_CONFIG).find(type => ilk.startsWith(type)) || 'OTHER';
+  return (
+    Object.keys(C.ILK_CONFIG).find((type) => ilk.startsWith(type)) || "OTHER"
+  );
 }
 
 export function bytesToString(hex: string): string {
-  return Buffer.from(hex.replace(/^0x/, ''), 'hex').toString().replace(/\x00/g, '');
+  return Buffer.from(hex.replace(/^0x/, ""), "hex")
+    .toString()
+    .replace(/\x00/g, "");
 }

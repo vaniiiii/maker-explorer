@@ -1,11 +1,11 @@
-import { useContractRead } from "wagmi";
+import { useReadContract } from "wagmi";
 import { parseVaultInfo } from "@/utils/utils";
-import { VAULT_INFO_ABI, VAULT_INFO_ADDRESS } from "@/utils/constants";
+import { VAULT_INFO_V2_ABI, VAULT_INFO_V2_ADDRESS } from "@/utils/constants";
 
 export default function VaultInfo({ vaultNumber }: { vaultNumber: string }) {
-  const { data, isError, isLoading } = useContractRead({
-    address: VAULT_INFO_ADDRESS,
-    abi: VAULT_INFO_ABI,
+  const { data, isError, isLoading } = useReadContract({
+    address: VAULT_INFO_V2_ADDRESS,
+    abi: VAULT_INFO_V2_ABI,
     functionName: "getCdpInfo",
     args: [vaultNumber],
     chainId: 1,
