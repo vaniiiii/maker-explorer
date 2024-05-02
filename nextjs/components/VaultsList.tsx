@@ -4,15 +4,20 @@ import { useSearchVaults } from "@/hooks/useSearchVaults";
 interface VaultListProps {
   collateralType: string;
   vaultNumber: string;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
 }
 
 export default function VaultList({
   collateralType,
   vaultNumber,
+  loading,
+  setLoading,
 }: VaultListProps) {
-  const { data, error, loading, progress, searchAttempted } = useSearchVaults(
+  const { data, error, progress, searchAttempted } = useSearchVaults(
     collateralType,
-    vaultNumber
+    vaultNumber,
+    setLoading
   );
 
   if (error) {

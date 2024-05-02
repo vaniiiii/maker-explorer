@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { search } from "@/utils/search";
 
-export function useSearchVaults(collateralType: string, vaultNumber: string) {
+export function useSearchVaults(collateralType: string, vaultNumber: string, setLoading: (loading: boolean) => void) {
   const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
   const [searchAttempted, setSearchAttempted] = useState<boolean>(false);
@@ -39,5 +38,5 @@ export function useSearchVaults(collateralType: string, vaultNumber: string) {
     fetchData();
   }, [collateralType, vaultNumber]);
 
-  return { data, loading, error, progress, searchAttempted };
+  return { data, error, progress, searchAttempted };
 }

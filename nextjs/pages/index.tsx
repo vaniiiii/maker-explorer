@@ -7,6 +7,7 @@ export default function Home() {
   const [vaultNumber, setVaultNumber] = useState("");
   const [debouncedVaultNumber, setDebouncedVaultNumber] = useState("");
   const [selectedCollateral, setSelectedCollateral] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -26,12 +27,19 @@ export default function Home() {
         <CollateralSelector
           selectedCollateral={selectedCollateral}
           onCollateralSelect={setSelectedCollateral}
+          loading={loading}
         />
-        <SearchBar inputValue={vaultNumber} onInputChange={setVaultNumber} />
+        <SearchBar
+          inputValue={vaultNumber}
+          onInputChange={setVaultNumber}
+          loading={loading}
+        />
       </div>
       <VaultsList
         collateralType={selectedCollateral}
         vaultNumber={debouncedVaultNumber}
+        loading={loading}
+        setLoading={setLoading}
       />
     </div>
   );

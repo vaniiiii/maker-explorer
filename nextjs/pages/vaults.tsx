@@ -19,7 +19,11 @@ export default function Vaults() {
   return (
     <div className="p-10 flex flex-col justify-center items-center">
       <p className="font-bold text-4xl text-center">Explore MakerDAO Vaults</p>
-      <SearchBar inputValue={vaultNumber} onInputChange={setVaultNumber} />
+      <SearchBar
+        inputValue={vaultNumber}
+        onInputChange={setVaultNumber}
+        loading={false}
+      />
       <VaultInfo vaultNumber={debouncedValue} />
     </div>
   );

@@ -3,9 +3,11 @@ import { useState } from "react";
 export default function CollateralSelector({
   selectedCollateral,
   onCollateralSelect,
+  loading,
 }: {
   selectedCollateral: string;
   onCollateralSelect: any;
+  loading: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const options = [
@@ -31,7 +33,9 @@ export default function CollateralSelector({
     <div className="p-1 flex flex-col">
       <div className="relative">
         <div
-          className="form-select h-10 text-white bg-black bg-opacity-20 outline-none border-0 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-700 hover:bg-opacity-50"
+          className={`form-select h-10 text-white bg-black bg-opacity-20 outline-none border-0 rounded-full flex items-center justify-center cursor-pointer ${
+            loading ? "pointer-events-none opacity-50" : ""
+          }`}
           onClick={handleDropdownToggle}
         >
           {displayValue}
