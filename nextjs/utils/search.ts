@@ -3,15 +3,7 @@ import { mainnet } from "viem/chains";
 import { bytesToString } from "@/utils/utils";
 import * as C from "@/utils/constants";
 
-const client = createPublicClient({
-  chain: mainnet,
-  transport: http(C.ALCHEMY_API_KEY),
-  batch: {
-    multicall: {
-      batchSize: C.CALLDATA_LIMIT,
-    },
-  },
-});
+const client = C.client;
 
 export async function search(
   collateralType: string,

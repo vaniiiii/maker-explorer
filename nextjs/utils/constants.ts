@@ -1,3 +1,9 @@
+import { createPublicClient, http } from "viem";
+import { mainnet } from "viem/chains";
+import { createConfig } from "wagmi";
+import { bytesToString } from "@/utils/utils";
+import * as C from "@/utils/constants";
+
 interface IlkConfig {
   [key: string]: { price: number; liqRatio: number };
 }
@@ -118,6 +124,16 @@ const ILK_CONFIG: IlkConfig = {
   },
 };
 
+const client = createPublicClient({
+  chain: mainnet,
+  transport: http(C.ALCHEMY_API_KEY),
+  batch: {
+    multicall: {
+      batchSize: C.CALLDATA_LIMIT,
+    },
+  },
+});
+
 export {
   RAY,
   MAX_RPC_CALLS,
@@ -134,4 +150,5 @@ export {
   VAULT_INFO_V2_ADDRESS,
   VAULT_INFO_V2_ABI,
   ILK_CONFIG,
+  client,
 };
