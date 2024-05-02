@@ -6,23 +6,12 @@ import * as C from '@/utils/constants';
 const client = createPublicClient({
   chain: mainnet,
   transport: http(C.ALCHEMY_API_KEY),
+  batch: {
+    multicall: {
+      batchSize: C.CALLDATA_LIMIT,
+    },
+  },
 })
-
-function delay(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function fetchVault(id: number, retryCount: number = 3) {
-  const data: any = await client.readContract({
-    "abi": C.VAULT_INFO_ABI,
-    "address": C.VAULT_INFO_ADDRESS,
-    functionName: "getCdpInfo",
-    args: [id],
-  });
-
-  const ilk = data ? bytesToString(data[3]) : "";
-  return { id, ilk };
-}
 
 export async function search(collateralType: string, roughCdpId: string, setProgress: (progress: number) => void) {
   const totalVaults: string = await client.readContract({
@@ -35,41 +24,56 @@ export async function search(collateralType: string, roughCdpId: string, setProg
   let lowerId = parseInt(roughCdpId);
   let upperId = parseInt(roughCdpId) + 1;
 
-  const vaults = [];
-  let apiCallCount = 0;
-  let progress = 0;
+  const vaults: number[] = [];
+
+  const batchSize = collateralType === "ETH-A" ? C.BATCH_SIZE_ETH : C.BATCH_SIZE_OTHERS;
 
   while (lowerId > 0 || upperId <= parseInt(totalVaults)) {
-    const lowerCalls = [];
-    const upperCalls = [];
+    let callCountLower: number = lowerId > 0 ? batchSize : 0;
+    let callCountUpper: number = upperId <= parseInt(totalVaults) ? batchSize : 0;
 
-    for (let i = 0; i < 5 && lowerId > 0; i++) {
-      lowerCalls.push(fetchVault(lowerId--));
-      apiCallCount++;
-    }
-    for (let i = 0; i < 5 && upperId <= parseInt(totalVaults); i++) {
-      upperCalls.push(fetchVault(upperId++));
-      apiCallCount++;
+    if (callCountLower == 0) {
+      callCountUpper = 2 * batchSize;
+    } else if (callCountUpper == 0) {
+      callCountLower = 2 * batchSize;
     }
 
-    if (apiCallCount >= 40) {
-      await delay(100); // @dev rate-limit to 40 calls per 100ms
-      apiCallCount = 0;
+    const calls: any = [];
+    for (let i = 0; i < callCountLower && lowerId > 0; i++, lowerId--) {
+      calls.push({
+        address: C.VAULT_INFO_ADDRESS,
+        abi: C.VAULT_INFO_ABI,
+        functionName: "getCdpInfo",
+        args: [lowerId]
+      });
+    }
+    for (let i = 0; i < callCountUpper && upperId <= parseInt(totalVaults); i++, upperId++) {
+      calls.push({
+        address: C.VAULT_INFO_ADDRESS,
+        abi: C.VAULT_INFO_ABI,
+        functionName: "getCdpInfo",
+        args: [upperId]
+      });
     }
 
-    const completedCalls = await Promise.all([...lowerCalls, ...upperCalls].map(p => p.catch(e => e)));
-
-    for (const completedCall of completedCalls) {
-      if (completedCall.ilk === collateralType) {
-        vaults.push(completedCall.id);
-      }
-      setProgress(Math.min(100, (vaults.length / 20) * 100));
+    try {
+      const results = await client.multicall({ contracts: calls });
+      results.forEach((result: any, index: number) => {
+        if (result.status === 'success' && bytesToString(result.result[3]) === collateralType) {
+          setProgress(Math.min(100, (vaults.length / C.DESIRED_VAULTS) * 100));
+          vaults.push(calls[index].args[0]);
+        }
+      });
+      if (vaults.length >= C.DESIRED_VAULTS) break;
+    } catch (e) {
+      console.error("Failed during multicall fetch:", e);
+      throw e;
     }
-
-    if (vaults.length >= 20) break;
   }
+
+  setProgress(100);
 
   vaults.sort((a, b) => Math.abs(a - parseInt(roughCdpId)) - Math.abs(b - parseInt(roughCdpId)));
 
-  return vaults.length < 20 ? vaults.slice(0, vaults.length) : vaults.slice(0, 20);
+  return vaults.length < C.DESIRED_VAULTS ? vaults.slice(0, vaults.length) : vaults.slice(0, C.DESIRED_VAULTS);
 }
