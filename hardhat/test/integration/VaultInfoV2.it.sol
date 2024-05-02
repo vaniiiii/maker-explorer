@@ -33,9 +33,31 @@ contract VaultInfoV2Test is Test {
         );
     }
 
-    function test_getCdpInfo() external view {
-        (, , , , , , uint256 totalDebt) = vaultInfo.getCdpInfo(31214);
+    function test_getCdpInfo() external {
+        uint256 blockNumber = 19785378;
+        vm.roll(blockNumber);
 
-        console.log(totalDebt);
+        uint256 DIVIDING_FACTOR = 10 ** 27 * 10 ** 18;
+
+        uint256 VAULT_31214_DEBT = 127277617;
+        uint256 VAULT_31039_DEBT = 68007766;
+        uint256 VAULT_1985_DEBT = 64319592;
+        uint256 VAULT_22025_DEBT = 56082800;
+        uint256 VAULT_19102_DEBT = 33753886;
+        uint256 VAULT_30142_DEBT = 559412;
+
+        (, , , , , , uint256 totalDebt31214) = vaultInfo.getCdpInfo(31214);
+        (, , , , , , uint256 totalDebt31039) = vaultInfo.getCdpInfo(31039);
+        (, , , , , , uint256 totalDebt1985) = vaultInfo.getCdpInfo(1985);
+        (, , , , , , uint256 totalDebt22025) = vaultInfo.getCdpInfo(22025);
+        (, , , , , , uint256 totalDebt19102) = vaultInfo.getCdpInfo(19102);
+        (, , , , , , uint256 totalDebt30142) = vaultInfo.getCdpInfo(30142);
+
+        assertEq(VAULT_31214_DEBT, totalDebt31214 / DIVIDING_FACTOR);
+        assertEq(VAULT_31039_DEBT, totalDebt31039 / DIVIDING_FACTOR);
+        assertEq(VAULT_1985_DEBT, totalDebt1985 / DIVIDING_FACTOR);
+        assertEq(VAULT_22025_DEBT, totalDebt22025 / DIVIDING_FACTOR);
+        assertEq(VAULT_19102_DEBT, totalDebt19102 / DIVIDING_FACTOR);
+        assertEq(VAULT_30142_DEBT, totalDebt30142 / DIVIDING_FACTOR);
     }
 }

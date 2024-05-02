@@ -96,20 +96,6 @@ const VAULT_INFO_V2_ABI = [
     stateMutability: "view",
     type: "function",
   },
-  {
-    inputs: [],
-    name: "manager",
-    outputs: [{ internalType: "contract IManager", name: "", type: "address" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "vat",
-    outputs: [{ internalType: "contract IVat", name: "", type: "address" }],
-    stateMutability: "view",
-    type: "function",
-  },
 ];
 
 const ETH_PRICE = 3200;
