@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { search } from "@/utils/search";
+import { useSearchVaults } from "@/hooks/useSearchVaults";
 
 interface VaultListProps {
   collateralType: string;
@@ -10,52 +10,46 @@ export default function VaultList({
   collateralType,
   vaultNumber,
 }: VaultListProps) {
-  const [data, setData] = useState<any[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [searchPerformed, setSearchPerformed] = useState<boolean>(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!collateralType || !vaultNumber) {
-        return; // @dev Exit early if inputs are not valid
-      }
-
-      try {
-        const result = await search(collateralType, vaultNumber);
-        setData(result);
-        setError(null);
-      } catch (err) {
-        setError("Error fetching data");
-        console.error(err);
-        setData([]);
-      }
-
-      setSearchPerformed(true);
-    };
-
-    fetchData();
-  }, [collateralType, vaultNumber]);
+  const { data, error, loading, progress } = useSearchVaults(
+    collateralType,
+    vaultNumber
+  );
 
   if (error) {
     return <div>Error: {error}</div>;
   }
 
-  if (!searchPerformed) {
-    return;
-  } else if (searchPerformed && data.length === 0) {
-    return <div>No data available.</div>;
-  } else {
+  if (loading) {
     return (
       <div>
-        <h3 className="text-center">Vault Information</h3>
-        <ul>
-          {data.map((item) => (
-            <li className="text-center" key={item}>
-              {item}
-            </li>
-          ))}
-        </ul>
+        <div>Loading...</div>
+        <div style={{ width: "100%", backgroundColor: "#ccc" }}>
+          <div
+            style={{
+              width: `${progress}%`,
+              backgroundColor: "blue",
+              height: "20px",
+            }}
+          ></div>
+        </div>
       </div>
     );
   }
+
+  if (data.length === 0) {
+    return <div>No data available.</div>;
+  }
+
+  return (
+    <div>
+      <h3 className="text-center">Vault Information</h3>
+      <ul>
+        {data.map((item, index) => (
+          <li className="text-center" key={index}>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }

@@ -12,7 +12,7 @@ function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function fetchVault(id: number, retryCount = 3) {
+async function fetchVault(id: number, retryCount: number = 3) {
   const data: any = await client.readContract({
     "abi": C.VAULT_INFO_ABI,
     "address": C.VAULT_INFO_ADDRESS,
@@ -24,21 +24,22 @@ async function fetchVault(id: number, retryCount = 3) {
   return { id, ilk };
 }
 
-export async function search(collateralType: string, roughCdpId: string) {
-  const totalVaults: number = await client.readContract({
+export async function search(collateralType: string, roughCdpId: string, setProgress: (progress: number) => void) {
+  const totalVaults: string = await client.readContract({
     "abi": C.MANAGER_ABI,
     "address": C.MANAGER_ADDRESS,
     functionName: "cdpi",
     args: [],
-  }) as number;
+  }) as string;
 
   let lowerId = parseInt(roughCdpId);
   let upperId = parseInt(roughCdpId) + 1;
 
   const vaults = [];
   let apiCallCount = 0;
+  let progress = 0;
 
-  while (lowerId > 0 || upperId <= totalVaults) {
+  while (lowerId > 0 || upperId <= parseInt(totalVaults)) {
     const lowerCalls = [];
     const upperCalls = [];
 
@@ -46,7 +47,7 @@ export async function search(collateralType: string, roughCdpId: string) {
       lowerCalls.push(fetchVault(lowerId--));
       apiCallCount++;
     }
-    for (let i = 0; i < 5 && upperId <= totalVaults; i++) {
+    for (let i = 0; i < 5 && upperId <= parseInt(totalVaults); i++) {
       upperCalls.push(fetchVault(upperId++));
       apiCallCount++;
     }
@@ -62,6 +63,7 @@ export async function search(collateralType: string, roughCdpId: string) {
       if (completedCall.ilk === collateralType) {
         vaults.push(completedCall.id);
       }
+      setProgress(Math.min(100, (vaults.length / 20) * 100));
     }
 
     if (vaults.length >= 20) break;
