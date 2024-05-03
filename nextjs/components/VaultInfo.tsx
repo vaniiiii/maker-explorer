@@ -29,12 +29,7 @@ export default function VaultInfo({ vaultNumber }: { vaultNumber: string }) {
   } = parseVaultInfo(data);
 
   if (ilk === "") {
-    ilk = "--";
-    collateral = "--";
-    debt = "--";
-    collateralizationRatio = "--";
-    minimalCollateral = "--";
-    maximumDebt = "--";
+    return <div className="text-center text-xl">Invalid vault number</div>;
   }
 
   return (

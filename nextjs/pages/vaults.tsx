@@ -9,7 +9,7 @@ export default function Vaults() {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedValue(vaultNumber);
-    }, 300); // 300ms
+    }, 500); // 500ms
 
     return () => {
       clearTimeout(handler);
