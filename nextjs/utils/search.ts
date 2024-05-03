@@ -19,6 +19,12 @@ export async function search(
     })) as string
   );
 
+  if (parseInt(roughCdpId) > totalVaults) {
+    throw new Error(
+      `Invalid vault ID: Please enter a number between 1 and ${totalVaults}`
+    );
+  }
+
   let lowerId = parseInt(roughCdpId);
   let upperId = parseInt(roughCdpId) + 1;
 
@@ -72,10 +78,10 @@ export async function search(
             result.status === "success" &&
             bytesToString(result.result[3]) === collateralType
           ) {
+            vaults.push(calls[index].args[0]);
             setProgress(
               Math.min(100, (vaults.length / C.DESIRED_VAULTS) * 100)
             );
-            vaults.push(calls[index].args[0]);
           } else if (result.status === "failure") {
             failedCalls.push(calls[index]);
           }

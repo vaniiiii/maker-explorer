@@ -12,6 +12,8 @@ export function useSearchVaults(
   const [searchAttempted, setSearchAttempted] = useState<boolean>(false);
 
   useEffect(() => {
+    let isActive = true;
+
     async function fetchData() {
       if (!collateralType || !vaultNumber) {
         setData([]);
@@ -25,21 +27,32 @@ export function useSearchVaults(
       setLoading(true);
       setProgress(0);
       setData([]); // @dev Reset data on new search
+      setError(null);
       setSearchAttempted(true);
       try {
         const results = await search(collateralType, vaultNumber, setProgress);
-        setData(results);
-        setError(null);
-      } catch (err) {
-        setError("Error fetching data");
-        console.error(err);
-        setData([]);
+        if (isActive) {
+          setData(results);
+          setError(null);
+        }
+      } catch (err: any) {
+        if (isActive) {
+          setError(err.message || "An unexpected error occurred");
+          console.error(err);
+          setData([]);
+        }
       } finally {
-        setLoading(false);
+        if (isActive) {
+          setLoading(false);
+        }
       }
     }
 
     fetchData();
+
+    return () => {
+      isActive = false;
+    };
   }, [collateralType, vaultNumber]);
 
   return { data, error, progress, searchAttempted };
