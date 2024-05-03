@@ -1,5 +1,7 @@
 import { useReadContract } from "wagmi";
 import { parseVaultInfo } from "@/utils/utils";
+import { useAccount } from "wagmi";
+import SignMessage from "@/components/SignMessage";
 import { VAULT_INFO_V2_ABI, VAULT_INFO_V2_ADDRESS } from "@/utils/constants";
 
 export default function VaultInfo({ vaultNumber }: { vaultNumber: string }) {
@@ -10,6 +12,8 @@ export default function VaultInfo({ vaultNumber }: { vaultNumber: string }) {
     args: [vaultNumber],
     chainId: 1,
   });
+
+  const { isConnected } = useAccount();
 
   if (vaultNumber === "") return null;
   if (isLoading) return <p>Loading...</p>;
@@ -59,6 +63,7 @@ export default function VaultInfo({ vaultNumber }: { vaultNumber: string }) {
         <p className="text-white font-semibold">Max. Debt:</p>
         <p className="text-white">{maximumDebt} DAI</p>
       </div>
+      {isConnected && <SignMessage message={"This CDP is mine!"} />}
     </div>
   );
 }
