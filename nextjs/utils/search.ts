@@ -28,16 +28,16 @@ export async function search(
 
   const vaults: number[] = [];
 
-  const batchSize =
+  let batchSize =
     collateralType === "ETH-A" ? C.BATCH_SIZE_ETH : C.BATCH_SIZE_OTHERS;
 
   while (lowerId > 0 || upperId <= totalVaults) {
     let callCountLower: number = lowerId > 0 ? batchSize : 0;
     let callCountUpper: number = upperId <= totalVaults ? batchSize : 0;
 
-    if (callCountLower == 0) {
+    if (callCountLower === 0) {
       callCountUpper = 2 * batchSize;
-    } else if (callCountUpper == 0) {
+    } else if (callCountUpper === 0) {
       callCountLower = 2 * batchSize;
     }
 
@@ -65,6 +65,7 @@ export async function search(
 
     let attempts = 0;
     let failedCalls: any = [];
+    let foundVaultsInBatch = false;
 
     do {
       try {
@@ -76,6 +77,7 @@ export async function search(
             result.status === "success" &&
             bytesToString(result.result[3]) === collateralType
           ) {
+            foundVaultsInBatch = true;
             vaults.push(calls[index].args[0]);
             setProgress(
               Math.min(100, (vaults.length / C.DESIRED_VAULTS) * 100)
@@ -94,6 +96,13 @@ export async function search(
         if (++attempts >= C.MAX_RETRIES) throw e;
       }
     } while (failedCalls.length > 0 && attempts < C.MAX_RETRIES);
+
+    if (!foundVaultsInBatch) {
+      batchSize = Math.min(batchSize * 2, C.MAX_BATCH_SIZE);
+    } else {
+      batchSize =
+        collateralType === "ETH-A" ? C.BATCH_SIZE_ETH : C.BATCH_SIZE_OTHERS;
+    }
 
     if (vaults.length >= C.DESIRED_VAULTS) break;
   }
