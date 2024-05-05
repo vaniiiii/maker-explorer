@@ -13,7 +13,11 @@
 - 📊 Check Position Metrics: Examine position collateral, debt, and collateralization ratio.
   Determine the maximum and minimum values necessary to maintain the position above the required ratio.
 
+### Additional Informations
+
 📝 VaultInfoV2 contract, which includes totalDebt calculation, is [deployed and verified](https://etherscan.io/address/0xfBc1243f0E160D2744721D6D9a909C8DC124A87E) on Ethereum.
+
+For better performance, it is recommended to use a custom RPC and set it in the [constants](./nextjs/utils/constants.ts) file under the `ALCHEMY_API_KEY` variable. Additionally, you can optimize the search window by adjusting the values of `BATCH_SIZE_ETH` or `BATCH_SIZE_OTHERS` in the same file.
 
 ## Requirements
 
