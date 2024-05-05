@@ -1,10 +1,6 @@
 import { formatEther } from "viem";
 import * as C from "@/utils/constants";
 
-// TO-DO:
-// 1. Function signature
-// 5. CLAIM AVAIL
-
 export const parseVaultInfo = (data: any) => {
   const ilk = data ? bytesToString(data[3]) : "";
   const collateral = data ? parseFloat(formatEther(data[4])) : 0;

@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { useSearchVaults } from "@/hooks/useSearchVaults";
 
 interface VaultListProps {
